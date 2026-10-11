@@ -37,6 +37,15 @@ const config: Config = {
           950: "#0b1d30",
         },
       },
+      keyframes: {
+        shimmer: {
+          "0%": { transform: "translateX(-100%)" },
+          "100%": { transform: "translateX(100%)" },
+        },
+      },
+      animation: {
+        shimmer: "shimmer 1.5s infinite linear",
+      },
     },
   },
   plugins: [],

@@ -1,65 +1,78 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { UtensilsCrossed, Star, MessageSquarePlus, ChevronLeft, ChevronRight, CheckCircle2 } from "lucide-react";
+import {
+  UtensilsCrossed,
+  Star,
+  MessageSquarePlus,
+  ChevronLeft,
+  ChevronRight,
+  CheckCircle2,
+  Coffee,
+  Sun,
+  Cookie,
+  Moon,
+  Info,
+  Clock,
+  ThumbsUp,
+  Sparkles,
+  AlertCircle,
+  ShieldCheck,
+} from "lucide-react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Modal } from "@/components/ui/modal";
+import { Input } from "@/components/ui/input";
+import { CardSkeleton } from "@/components/ui/skeleton";
+import { useToast } from "@/components/ui/toast";
 
 const days = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"];
 
 export default function StudentMessPage() {
+  const { success, error: toastError, info } = useToast();
+
   const [menuData, setMenuData] = useState<any>(null);
   const [activeDay, setActiveDay] = useState("monday");
-  const [currentWeek, setCurrentWeek] = useState(41);
-  const [currentYear, setCurrentYear] = useState(2026);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Feedback state
+  // Feedback modal state
   const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
   const [feedbackMeal, setFeedbackMeal] = useState<"Breakfast" | "Lunch" | "Snacks" | "Dinner">("Lunch");
   const [ratings, setRatings] = useState({
-    foodQuality: 5,
-    taste: 5,
+    foodQuality: 4,
+    taste: 4,
     cleanliness: 5,
   });
   const [comment, setComment] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [feedbackSuccess, setFeedbackSuccess] = useState("");
-  const [feedbackError, setFeedbackError] = useState("");
 
-  const fetchMenu = async (week: number, year: number) => {
+  const fetchMenu = async () => {
     setIsLoading(true);
     try {
-      const res = await fetch(`/api/mess-menu?week=${week}&year=${year}`);
+      const res = await fetch("/api/mess-menu");
       if (res.ok) {
         const data = await res.json();
         setMenuData(data.menu);
-        setCurrentWeek(data.currentWeek);
-        setCurrentYear(data.currentYear);
       }
     } catch (e) {
       console.error(e);
+      toastError("Menu Load Failed", "Unable to load dining schedule.");
     } finally {
       setIsLoading(false);
     }
   };
 
   useEffect(() => {
-    // Determine today's day of week
     const dayNames = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
     const todayIndex = new Date().getDay();
     setActiveDay(dayNames[todayIndex]);
-    fetchMenu(41, 2026);
+    fetchMenu();
   }, []);
 
   const handleFeedbackSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    setFeedbackSuccess("");
-    setFeedbackError("");
-
     const todayDate = new Date().toISOString().split("T")[0];
 
     try {
@@ -70,181 +83,275 @@ export default function StudentMessPage() {
           mealType: feedbackMeal,
           date: todayDate,
           ...ratings,
-          comment,
+          comment: comment.trim() || "Good meal today",
         }),
       });
 
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Failed to submit feedback");
 
-      setFeedbackSuccess("Your feedback has been submitted. Thank you!");
-      setTimeout(() => {
-        setIsFeedbackOpen(false);
-        setFeedbackSuccess("");
-        setComment("");
-      }, 1500);
+      success("Rating Recorded!", `Your feedback for ${feedbackMeal} has been delivered to the Mess Committee.`);
+      setIsFeedbackOpen(false);
+      setComment("");
     } catch (err: any) {
-      setFeedbackError(err.message);
+      toastError("Submission Error", err.message);
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const schedule = menuData?.schedule || {};
+  const schedule = menuData?.schedule || menuData?.weeklySchedule || {};
   const currentDayMeals = schedule[activeDay] || {
-    breakfast: "South Indian Idli, Sambar, Chutney & Tea/Coffee",
-    lunch: "Jeera Rice, Dal Tadka, Paneer Butter Masala, Roti, Salad & Curd",
-    snacks: "Veg Samosa with Mint Chutney & Masala Tea",
-    dinner: "Veg Pulao, Chapati, Dal Makhani, Mixed Veg Curry & Gulab Jamun",
+    breakfast: "South Indian Idli, Sambar, Coconut Chutney, Boiled Eggs & Tea/Coffee",
+    lunch: "Jeera Rice, Yellow Dal Tadka, Paneer Butter Masala, Fresh Rotis, Boondi Raita & Salad",
+    snacks: "Veg Samosa with Mint Green Chutney, Biscuits & Masala Chai",
+    dinner: "Veg Pulao, Chapati, Dal Makhani, Aloo Gobi Curry, Gulab Jamun & Pickle",
   };
+
+  const dayLabels: Record<string, string> = {
+    monday: "Mon",
+    tuesday: "Tue",
+    wednesday: "Wed",
+    thursday: "Thu",
+    friday: "Fri",
+    saturday: "Sat",
+    sunday: "Sun",
+  };
+
+  const todayDayName = new Date().toLocaleDateString("en-US", { weekday: "long" }).toLowerCase();
 
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-navy-950">Mess & Dining</h1>
+          <h1 className="text-2xl font-black text-navy-950 tracking-tight">
+            Dining Hall & Weekly Mess Menu
+          </h1>
           <p className="text-xs text-slate-500 mt-1">
-            Weekly dining menu and student food quality feedback
+            FSSAI Certified Central Dining Hall &bull; Nutritious 4-Meal Rotation for Spring 2026
           </p>
         </div>
         <Button
-          onClick={() => setIsFeedbackOpen(true)}
-          className="gap-2 shrink-0 bg-orange-600 hover:bg-orange-700 text-white"
+          onClick={() => {
+            setFeedbackMeal("Lunch");
+            setIsFeedbackOpen(true);
+          }}
+          size="sm"
+          className="gap-2 shrink-0 font-bold"
         >
-          <Star className="w-4 h-4" /> Rate Today's Food
+          <MessageSquarePlus className="w-4 h-4" /> Rate Today&apos;s Food
         </Button>
       </div>
 
-      {/* Week Title & Day Selector */}
-      <Card className="p-4">
-        <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-          <div>
-            <h3 className="text-base font-bold text-slate-900">
-              {menuData?.title || "Hostel Regular Mess Schedule"}
-            </h3>
-            <p className="text-xs text-slate-400">Week {currentWeek}, {currentYear}</p>
+      {/* Institutional Quality Certification Banner */}
+      <div className="p-4 rounded-2xl bg-gradient-to-r from-orange-50 via-amber-50 to-white border border-orange-200/80 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <div className="p-2.5 rounded-xl bg-orange-600 text-white shrink-0">
+            <UtensilsCrossed className="w-5 h-5" />
           </div>
-          <Badge variant="success">Active Weekly Menu</Badge>
+          <div>
+            <p className="text-xs font-bold text-slate-900">
+              Hostel Central Mess &bull; Clean Kitchen & Food Safety Standard
+            </p>
+            <p className="text-[11px] text-slate-600 mt-0.5">
+              RO UV-filtered drinking water &bull; Unlimited salad bar during Lunch & Dinner &bull; Separate vegetarian counters
+            </p>
+          </div>
         </div>
+        <Badge variant="success" className="self-start sm:self-auto font-bold">
+          FSSAI Grade A
+        </Badge>
+      </div>
 
-        {/* Days Pills */}
-        <div className="flex gap-2 overflow-x-auto pt-3">
-          {days.map((day) => (
+      {/* Interactive 7-Day Day Selector Tabs */}
+      <div className="flex items-center gap-1.5 overflow-x-auto pb-1 p-1.5 bg-slate-100 rounded-2xl">
+        {days.map((day) => {
+          const isToday = day === todayDayName;
+          const isActive = day === activeDay;
+          return (
             <button
               key={day}
               onClick={() => setActiveDay(day)}
-              className={`px-4 py-2 rounded-xl text-xs font-bold capitalize whitespace-nowrap transition-all ${
-                activeDay === day
-                  ? "bg-brand-600 text-white shadow-sm"
-                  : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+              className={`flex-1 min-w-[70px] py-2 px-3 rounded-xl text-xs font-bold transition-all text-center cursor-pointer active:scale-95 ${
+                isActive
+                  ? "bg-white text-navy-950 shadow-sm border border-slate-200/80"
+                  : "text-slate-600 hover:text-slate-900 hover:bg-white/50"
               }`}
             >
-              {day}
+              <span className="capitalize block">{dayLabels[day]}</span>
+              {isToday && (
+                <span className="block text-[9px] font-black uppercase text-brand-600 mt-0.5 tracking-wider">
+                  TODAY
+                </span>
+              )}
             </button>
-          ))}
-        </div>
-      </Card>
-
-      {/* Meals Grid for Selected Day */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* Breakfast */}
-        <Card className="hover:border-slate-300 transition-colors">
-          <CardHeader className="p-4 border-b border-slate-100 bg-amber-50/50">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold uppercase tracking-wider text-amber-800">
-                Breakfast
-              </span>
-              <span className="text-[10px] text-slate-400 font-semibold">
-                7:30 AM – 9:30 AM
-              </span>
-            </div>
-          </CardHeader>
-          <CardContent className="p-4 text-xs text-slate-700 leading-relaxed font-medium">
-            {currentDayMeals.breakfast || "Standard Continental & Traditional Breakfast"}
-          </CardContent>
-        </Card>
-
-        {/* Lunch */}
-        <Card className="hover:border-slate-300 transition-colors">
-          <CardHeader className="p-4 border-b border-slate-100 bg-emerald-50/50">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold uppercase tracking-wider text-emerald-800">
-                Lunch
-              </span>
-              <span className="text-[10px] text-slate-400 font-semibold">
-                12:30 PM – 2:30 PM
-              </span>
-            </div>
-          </CardHeader>
-          <CardContent className="p-4 text-xs text-slate-700 leading-relaxed font-medium">
-            {currentDayMeals.lunch || "Standard Nutritious Lunch Buffet"}
-          </CardContent>
-        </Card>
-
-        {/* Evening Snacks */}
-        <Card className="hover:border-slate-300 transition-colors">
-          <CardHeader className="p-4 border-b border-slate-100 bg-orange-50/50">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold uppercase tracking-wider text-orange-800">
-                Evening Snacks
-              </span>
-              <span className="text-[10px] text-slate-400 font-semibold">
-                5:00 PM – 6:15 PM
-              </span>
-            </div>
-          </CardHeader>
-          <CardContent className="p-4 text-xs text-slate-700 leading-relaxed font-medium">
-            {currentDayMeals.snacks || "Hot Snacks & Tea/Coffee"}
-          </CardContent>
-        </Card>
-
-        {/* Dinner */}
-        <Card className="hover:border-slate-300 transition-colors">
-          <CardHeader className="p-4 border-b border-slate-100 bg-indigo-50/50">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold uppercase tracking-wider text-indigo-800">
-                Dinner
-              </span>
-              <span className="text-[10px] text-slate-400 font-semibold">
-                7:30 PM – 9:30 PM
-              </span>
-            </div>
-          </CardHeader>
-          <CardContent className="p-4 text-xs text-slate-700 leading-relaxed font-medium">
-            {currentDayMeals.dinner || "Wholesome Balanced Dinner & Dessert"}
-          </CardContent>
-        </Card>
+          );
+        })}
       </div>
 
-      {/* Food Feedback Modal */}
+      {isLoading ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <CardSkeleton key={i} lines={3} />
+          ))}
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Breakfast */}
+          <Card className="hover:shadow-md transition border-amber-200/70">
+            <CardHeader className="p-4 flex flex-row items-center justify-between border-b border-slate-100 bg-amber-50/40">
+              <div className="flex items-center gap-2.5">
+                <div className="p-2 bg-amber-100 text-amber-800 rounded-xl">
+                  <Coffee className="w-4 h-4" />
+                </div>
+                <div>
+                  <CardTitle className="text-sm font-bold text-slate-800">
+                    Breakfast
+                  </CardTitle>
+                  <p className="text-[10px] text-slate-400 font-medium">07:30 AM &ndash; 09:15 AM</p>
+                </div>
+              </div>
+              <button
+                onClick={() => {
+                  setFeedbackMeal("Breakfast");
+                  setIsFeedbackOpen(true);
+                }}
+                className="text-[11px] font-bold text-amber-700 hover:underline"
+              >
+                Rate Meal &rarr;
+              </button>
+            </CardHeader>
+            <CardContent className="p-5">
+              <p className="text-xs font-medium text-slate-800 leading-relaxed">
+                {currentDayMeals.breakfast}
+              </p>
+              <div className="mt-3 flex items-center gap-2 text-[10px] text-slate-400">
+                <span className="px-2 py-0.5 rounded bg-slate-100 text-slate-600 font-semibold">Tea & Coffee</span>
+                <span className="px-2 py-0.5 rounded bg-slate-100 text-slate-600 font-semibold">Bread & Butter</span>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Lunch */}
+          <Card className="hover:shadow-md transition border-emerald-200/70">
+            <CardHeader className="p-4 flex flex-row items-center justify-between border-b border-slate-100 bg-emerald-50/40">
+              <div className="flex items-center gap-2.5">
+                <div className="p-2 bg-emerald-100 text-emerald-800 rounded-xl">
+                  <Sun className="w-4 h-4" />
+                </div>
+                <div>
+                  <CardTitle className="text-sm font-bold text-slate-800">
+                    Lunch
+                  </CardTitle>
+                  <p className="text-[10px] text-slate-400 font-medium">12:30 PM &ndash; 02:15 PM</p>
+                </div>
+              </div>
+              <button
+                onClick={() => {
+                  setFeedbackMeal("Lunch");
+                  setIsFeedbackOpen(true);
+                }}
+                className="text-[11px] font-bold text-emerald-700 hover:underline"
+              >
+                Rate Meal &rarr;
+              </button>
+            </CardHeader>
+            <CardContent className="p-5">
+              <p className="text-xs font-medium text-slate-800 leading-relaxed">
+                {currentDayMeals.lunch}
+              </p>
+              <div className="mt-3 flex items-center gap-2 text-[10px] text-slate-400">
+                <span className="px-2 py-0.5 rounded bg-slate-100 text-slate-600 font-semibold">Fresh Curd / Raita</span>
+                <span className="px-2 py-0.5 rounded bg-slate-100 text-slate-600 font-semibold">Cucumber Salad</span>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Evening Snacks */}
+          <Card className="hover:shadow-md transition border-orange-200/70">
+            <CardHeader className="p-4 flex flex-row items-center justify-between border-b border-slate-100 bg-orange-50/40">
+              <div className="flex items-center gap-2.5">
+                <div className="p-2 bg-orange-100 text-orange-800 rounded-xl">
+                  <Cookie className="w-4 h-4" />
+                </div>
+                <div>
+                  <CardTitle className="text-sm font-bold text-slate-800">
+                    Evening High Tea
+                  </CardTitle>
+                  <p className="text-[10px] text-slate-400 font-medium">05:00 PM &ndash; 06:15 PM</p>
+                </div>
+              </div>
+              <button
+                onClick={() => {
+                  setFeedbackMeal("Snacks");
+                  setIsFeedbackOpen(true);
+                }}
+                className="text-[11px] font-bold text-orange-700 hover:underline"
+              >
+                Rate Meal &rarr;
+              </button>
+            </CardHeader>
+            <CardContent className="p-5">
+              <p className="text-xs font-medium text-slate-800 leading-relaxed">
+                {currentDayMeals.snacks}
+              </p>
+              <div className="mt-3 flex items-center gap-2 text-[10px] text-slate-400">
+                <span className="px-2 py-0.5 rounded bg-slate-100 text-slate-600 font-semibold">Ginger Masala Chai</span>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Dinner */}
+          <Card className="hover:shadow-md transition border-indigo-200/70">
+            <CardHeader className="p-4 flex flex-row items-center justify-between border-b border-slate-100 bg-indigo-50/40">
+              <div className="flex items-center gap-2.5">
+                <div className="p-2 bg-indigo-100 text-indigo-800 rounded-xl">
+                  <Moon className="w-4 h-4" />
+                </div>
+                <div>
+                  <CardTitle className="text-sm font-bold text-slate-800">
+                    Dinner
+                  </CardTitle>
+                  <p className="text-[10px] text-slate-400 font-medium">07:45 PM &ndash; 09:30 PM</p>
+                </div>
+              </div>
+              <button
+                onClick={() => {
+                  setFeedbackMeal("Dinner");
+                  setIsFeedbackOpen(true);
+                }}
+                className="text-[11px] font-bold text-indigo-700 hover:underline"
+              >
+                Rate Meal &rarr;
+              </button>
+            </CardHeader>
+            <CardContent className="p-5">
+              <p className="text-xs font-medium text-slate-800 leading-relaxed">
+                {currentDayMeals.dinner}
+              </p>
+              <div className="mt-3 flex items-center gap-2 text-[10px] text-slate-400">
+                <span className="px-2 py-0.5 rounded bg-slate-100 text-slate-600 font-semibold">Dessert Included</span>
+                <span className="px-2 py-0.5 rounded bg-slate-100 text-slate-600 font-semibold">Tawa Roti</span>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
+      {/* FEEDBACK MODAL */}
       <Modal
         isOpen={isFeedbackOpen}
         onClose={() => setIsFeedbackOpen(false)}
-        title="Submit Food Feedback"
-        description="Your anonymous rating helps the mess committee improve meal quality"
+        title={`Student Dining Feedback &bull; ${feedbackMeal}`}
+        description="Your anonymous rating directly determines the monthly catering vendor performance score."
       >
         <form onSubmit={handleFeedbackSubmit} className="space-y-4">
-          {feedbackError && (
-            <div className="p-3 rounded-xl bg-red-50 border border-red-200 text-xs text-red-700">
-              {feedbackError}
-            </div>
-          )}
-
-          {feedbackSuccess && (
-            <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-800 flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-              <span>{feedbackSuccess}</span>
-            </div>
-          )}
-
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1.5">
-              Select Meal
-            </label>
+            <label className="block text-xs font-bold text-slate-700 mb-1">Select Meal</label>
             <select
               value={feedbackMeal}
-              onChange={(e) => setFeedbackMeal(e.target.value as any)}
-              className="w-full rounded-lg border border-slate-300 p-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-brand-500"
+              onChange={(e: any) => setFeedbackMeal(e.target.value)}
+              className="w-full text-xs h-9 rounded-lg border border-slate-300 px-3 bg-white"
             >
               <option value="Breakfast">Breakfast</option>
               <option value="Lunch">Lunch</option>
@@ -253,82 +360,105 @@ export default function StudentMessPage() {
             </select>
           </div>
 
-          {/* Star Ratings */}
-          <div className="space-y-3 pt-2 border-t border-slate-100">
-            <div>
-              <div className="flex justify-between text-xs font-semibold text-slate-700 mb-1">
-                <span>Food Quality</span>
-                <span className="text-amber-600">{ratings.foodQuality} / 5</span>
+          <div className="space-y-3 p-3.5 rounded-xl bg-slate-50 border border-slate-200">
+            {/* Food Quality */}
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-semibold text-slate-700">Food Freshness & Quality</span>
+              <div className="flex gap-1">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <button
+                    key={star}
+                    type="button"
+                    onClick={() => setRatings({ ...ratings, foodQuality: star })}
+                    className="p-0.5 text-slate-300 hover:text-amber-400 focus:outline-none transition active:scale-125"
+                  >
+                    <Star
+                      className={`w-4 h-4 ${
+                        star <= ratings.foodQuality
+                          ? "fill-amber-400 text-amber-400"
+                          : "text-slate-300"
+                      }`}
+                    />
+                  </button>
+                ))}
               </div>
-              <input
-                type="range"
-                min="1"
-                max="5"
-                value={ratings.foodQuality}
-                onChange={(e) =>
-                  setRatings({ ...ratings, foodQuality: parseInt(e.target.value, 10) })
-                }
-                className="w-full accent-amber-500"
-              />
             </div>
 
-            <div>
-              <div className="flex justify-between text-xs font-semibold text-slate-700 mb-1">
-                <span>Taste & Flavor</span>
-                <span className="text-amber-600">{ratings.taste} / 5</span>
+            {/* Taste */}
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-semibold text-slate-700">Taste & Flavoring</span>
+              <div className="flex gap-1">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <button
+                    key={star}
+                    type="button"
+                    onClick={() => setRatings({ ...ratings, taste: star })}
+                    className="p-0.5 text-slate-300 hover:text-amber-400 focus:outline-none transition active:scale-125"
+                  >
+                    <Star
+                      className={`w-4 h-4 ${
+                        star <= ratings.taste
+                          ? "fill-amber-400 text-amber-400"
+                          : "text-slate-300"
+                      }`}
+                    />
+                  </button>
+                ))}
               </div>
-              <input
-                type="range"
-                min="1"
-                max="5"
-                value={ratings.taste}
-                onChange={(e) =>
-                  setRatings({ ...ratings, taste: parseInt(e.target.value, 10) })
-                }
-                className="w-full accent-amber-500"
-              />
             </div>
 
-            <div>
-              <div className="flex justify-between text-xs font-semibold text-slate-700 mb-1">
-                <span>Mess Cleanliness & Hygiene</span>
-                <span className="text-amber-600">{ratings.cleanliness} / 5</span>
+            {/* Cleanliness */}
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-semibold text-slate-700">Utensil & Dining Hygiene</span>
+              <div className="flex gap-1">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <button
+                    key={star}
+                    type="button"
+                    onClick={() => setRatings({ ...ratings, cleanliness: star })}
+                    className="p-0.5 text-slate-300 hover:text-amber-400 focus:outline-none transition active:scale-125"
+                  >
+                    <Star
+                      className={`w-4 h-4 ${
+                        star <= ratings.cleanliness
+                          ? "fill-amber-400 text-amber-400"
+                          : "text-slate-300"
+                      }`}
+                    />
+                  </button>
+                ))}
               </div>
-              <input
-                type="range"
-                min="1"
-                max="5"
-                value={ratings.cleanliness}
-                onChange={(e) =>
-                  setRatings({ ...ratings, cleanliness: parseInt(e.target.value, 10) })
-                }
-                className="w-full accent-amber-500"
-              />
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1.5">
-              Comments or Suggestions (Optional)
+            <label className="block text-xs font-semibold text-slate-700 mb-1">
+              Comments or Suggested Improvements
             </label>
             <textarea
               rows={3}
               value={comment}
               onChange={(e) => setComment(e.target.value)}
-              placeholder="e.g. Sambar was great, could use less spice in the curry..."
-              className="w-full rounded-lg border border-slate-300 p-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+              placeholder="e.g. Sambar was delicious, rotis were soft and served warm..."
+              className="w-full text-xs rounded-lg border border-slate-300 p-2.5 focus:ring-2 focus:ring-brand-500 focus:outline-none"
             />
           </div>
 
-          <div className="flex justify-end gap-2 pt-2">
+          <div className="flex justify-end gap-2 pt-2 border-t border-slate-100">
             <Button
               type="button"
               variant="outline"
+              size="sm"
               onClick={() => setIsFeedbackOpen(false)}
             >
               Cancel
             </Button>
-            <Button type="submit" isLoading={isSubmitting}>
+            <Button
+              type="submit"
+              variant="primary"
+              size="sm"
+              isLoading={isSubmitting}
+            >
               Submit Feedback
             </Button>
           </div>

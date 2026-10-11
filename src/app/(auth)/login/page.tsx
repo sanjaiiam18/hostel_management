@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Building2, Eye, EyeOff, Lock, User as UserIcon, Shield, Sparkles } from "lucide-react";
+import { Building2, Eye, EyeOff, Lock, User as UserIcon, Shield, Sparkles, ArrowRight, Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
@@ -15,16 +15,19 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleLogin = async (e?: React.FormEvent, customIdent?: string, customPass?: string) => {
+    if (e) e.preventDefault();
     setIsLoading(true);
     setError("");
+
+    const id = customIdent || identifier;
+    const pwd = customPass || password;
 
     try {
       const res = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ identifier, password }),
+        body: JSON.stringify({ identifier: id, password: pwd }),
       });
 
       const data = await res.json();
@@ -47,55 +50,52 @@ export default function LoginPage() {
     }
   };
 
-  // Quick Demo Autofill Helpers for institutional reviews
-  const setDemoCredentials = (type: "admin" | "student") => {
-    if (type === "admin") {
-      setIdentifier("admin@hostelhub.edu");
-      setPassword("Admin@123");
-    } else {
-      setIdentifier("student1@hostelhub.edu");
-      setPassword("Student@123");
-    }
-    setError("");
+  // Instant 1-Click Demo Logins for fast evaluation
+  const handleQuickDemoLogin = (type: "admin" | "student") => {
+    const id = type === "admin" ? "admin@hostelhub.edu" : "student1@hostelhub.edu";
+    const pwd = type === "admin" ? "Admin@123" : "Student@123";
+    setIdentifier(id);
+    setPassword(pwd);
+    handleLogin(undefined, id, pwd);
   };
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md text-center">
-        <div className="inline-flex h-12 w-12 rounded-2xl bg-gradient-to-tr from-brand-700 to-indigo-500 items-center justify-center text-white shadow-lg shadow-brand-500/30 mb-3">
+        <Link href="/" className="inline-flex h-12 w-12 rounded-2xl bg-gradient-to-tr from-brand-700 to-indigo-500 items-center justify-center text-white shadow-lg shadow-brand-500/30 mb-3 hover:scale-105 transition-transform">
           <Building2 className="w-7 h-7" />
-        </div>
-        <h2 className="text-3xl font-extrabold text-navy-950 tracking-tight">
+        </Link>
+        <h2 className="text-3xl font-black text-navy-950 tracking-tight">
           Hostel<span className="text-brand-600">Hub</span>
         </h2>
-        <p className="mt-1 text-sm text-slate-500">
-          Educational Institutions Hostel Management System
+        <p className="mt-1 text-xs text-slate-500 font-medium">
+          National Institute of Technology &bull; Residential Life Portal
         </p>
       </div>
 
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md px-4 sm:px-0">
+      <div className="mt-7 sm:mx-auto sm:w-full sm:max-w-md px-4 sm:px-0">
         <div className="bg-white py-8 px-6 sm:px-10 shadow-xl rounded-2xl border border-slate-200/80">
-          <form className="space-y-5" onSubmit={handleLogin}>
+          <form className="space-y-4" onSubmit={(e) => handleLogin(e)}>
             {error && (
-              <div className="p-3.5 rounded-xl bg-red-50 border border-red-200 text-xs text-red-700 font-medium">
+              <div className="p-3.5 rounded-xl bg-red-50 border border-red-200 text-xs text-red-700 font-semibold animate-in fade-in">
                 {error}
               </div>
             )}
 
             <div>
               <Input
-                label="Email or Student ID"
+                label="Email or Student Roll ID"
                 id="identifier"
                 type="text"
                 value={identifier}
                 onChange={(e) => setIdentifier(e.target.value)}
-                placeholder="e.g. STU-2026-001 or student@hostelhub.edu"
+                placeholder="e.g. STU-2026-001 or admin@hostelhub.edu"
                 required
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1.5">
+              <label className="block text-xs font-bold text-slate-700 mb-1.5">
                 Password
               </label>
               <div className="relative">
@@ -110,15 +110,15 @@ export default function LoginPage() {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-3 text-slate-400 hover:text-slate-600"
+                  className="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600"
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
             </div>
 
-            <div className="flex items-center justify-between text-xs">
-              <label className="flex items-center gap-2 text-slate-600 cursor-pointer">
+            <div className="flex items-center justify-between text-xs pt-1">
+              <label className="flex items-center gap-2 text-slate-600 cursor-pointer select-none">
                 <input
                   type="checkbox"
                   className="rounded border-slate-300 text-brand-600 focus:ring-brand-500"
@@ -136,46 +136,48 @@ export default function LoginPage() {
 
             <Button
               type="submit"
-              className="w-full h-11 text-sm font-semibold"
+              className="w-full h-11 text-xs sm:text-sm font-bold shadow-md shadow-brand-500/20"
               isLoading={isLoading}
             >
-              Sign In to HostelHub
+              Sign In to Residence Portal
             </Button>
           </form>
 
-          {/* Quick Review Demo Accounts */}
-          <div className="mt-6 pt-6 border-t border-slate-100">
-            <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider text-center mb-3">
-              One-Click Demo Accounts
+          {/* Quick Review Demo Accounts (Instant 1-Click login) */}
+          <div className="mt-6 pt-5 border-t border-slate-100">
+            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest text-center mb-2.5">
+              Instant 1-Click Institutional Demo
             </p>
             <div className="grid grid-cols-2 gap-2.5">
               <button
                 type="button"
-                onClick={() => setDemoCredentials("student")}
-                className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-50 text-xs font-medium transition"
+                disabled={isLoading}
+                onClick={() => handleQuickDemoLogin("student")}
+                className="flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl border border-brand-200 bg-brand-50/50 hover:bg-brand-50 text-brand-800 text-xs font-bold transition active:scale-95 cursor-pointer disabled:opacity-50"
               >
                 <UserIcon className="w-3.5 h-3.5 text-brand-600" />
-                Student Demo
+                Student Demo &rarr;
               </button>
               <button
                 type="button"
-                onClick={() => setDemoCredentials("admin")}
-                className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-50 text-xs font-medium transition"
+                disabled={isLoading}
+                onClick={() => handleQuickDemoLogin("admin")}
+                className="flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl border border-navy-200 bg-navy-50/60 hover:bg-navy-100 text-navy-900 text-xs font-bold transition active:scale-95 cursor-pointer disabled:opacity-50"
               >
-                <Shield className="w-3.5 h-3.5 text-indigo-600" />
-                Warden Demo
+                <Shield className="w-3.5 h-3.5 text-navy-800" />
+                Warden Demo &rarr;
               </button>
             </div>
           </div>
 
-          <div className="mt-6 text-center">
+          <div className="mt-5 text-center">
             <p className="text-xs text-slate-600">
-              New student?{" "}
+              New residential student?{" "}
               <Link
                 href="/register"
                 className="font-bold text-brand-600 hover:text-brand-700"
               >
-                Create student account
+                Submit registration &rarr;
               </Link>
             </p>
           </div>
