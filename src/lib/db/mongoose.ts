@@ -32,7 +32,7 @@ export async function connectDB(): Promise<typeof mongoose> {
     };
 
     cached.promise = (async () => {
-      let uri = process.env.MONGODB_URI;
+      let uri = process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/hostelhub";
 
       if (uri && uri !== "memory") {
         try {
