@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import dns from "node:dns";
 import "@/models";
 
 interface MongooseCache {
@@ -43,12 +44,20 @@ export async function connectDB(): Promise<typeof mongoose> {
 
   cached.conn = null;
 
+  const primaryUri = process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/hostelhub";
+  const isAtlas = primaryUri.startsWith("mongodb+srv://");
+
+  if (isAtlas) {
+    try {
+      dns.setServers(["8.8.8.8", "1.1.1.1"]);
+    } catch (_) {}
+  }
+
   const opts = {
     bufferCommands: false,
-    serverSelectionTimeoutMS: 3000,
+    serverSelectionTimeoutMS: isAtlas ? 10000 : 3000,
   };
 
-  const primaryUri = process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/hostelhub";
   const localPersistentUri = "mongodb://127.0.0.1:27017/hostelhub";
 
   cached.promise = (async () => {
