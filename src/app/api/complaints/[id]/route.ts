@@ -101,3 +101,6 @@ export async function PUT(
     return NextResponse.json({ error: "Failed to update complaint" }, { status: 500 });
   }
 }
+
+export const PATCH = PUT;
+

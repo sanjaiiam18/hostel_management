@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import "@/models";
 
 interface MongooseCache {
   conn: typeof mongoose | null;
@@ -11,7 +12,7 @@ declare global {
   var mongooseCache: MongooseCache | undefined;
 }
 
-let cached: MongooseCache = global.mongooseCache || {
+const cached: MongooseCache = global.mongooseCache || {
   conn: null,
   promise: null,
 };
@@ -21,57 +22,99 @@ if (!global.mongooseCache) {
 }
 
 export async function connectDB(): Promise<typeof mongoose> {
-  if (cached.conn && mongoose.connection.readyState === 1) {
-    return cached.conn;
+  // If already connected and ready, return existing connection
+  if (mongoose.connection.readyState === 1) {
+    return mongoose;
   }
 
-  if (!cached.promise) {
-    const opts = {
-      bufferCommands: false,
-      serverSelectionTimeoutMS: 2000,
-    };
+  // If a connection promise is currently in-flight, await and return it
+  if (cached.promise) {
+    return cached.promise;
+  }
 
-    cached.promise = (async () => {
-      let uri = process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/hostelhub";
+  // If connection is in a half-open / broken state, reset it
+  if (mongoose.connection.readyState !== 0) {
+    try {
+      await mongoose.disconnect();
+    } catch (_) {
+      // Ignore disconnect error
+    }
+  }
 
-      if (uri && uri !== "memory") {
-        try {
-          console.log(`[Database] Attempting connection to MongoDB at: ${uri}`);
-          const m = await mongoose.connect(uri, opts);
-          console.log("[Database] Successfully connected to configured MongoDB.");
-          return m;
-        } catch (err: any) {
-          console.warn(`[Database] Could not connect to configured MongoDB (${err.message}). Falling back to MongoMemoryServer...`);
-        }
-      }
+  cached.conn = null;
 
-      // Memory Server fallback for zero-config testing / dev
+  const opts = {
+    bufferCommands: false,
+    serverSelectionTimeoutMS: 3000,
+  };
+
+  const primaryUri = process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/hostelhub";
+  const localPersistentUri = "mongodb://127.0.0.1:27017/hostelhub";
+
+  cached.promise = (async () => {
+    // 1. Attempt connection with primary URI
+    if (primaryUri && primaryUri !== "memory") {
       try {
-        console.log("[Database] Starting embedded MongoMemoryServer fallback...");
-        const { MongoMemoryServer } = await import("mongodb-memory-server");
-        if (!cached.memoryServer) {
-          cached.memoryServer = await MongoMemoryServer.create();
-        }
-        const memUri = cached.memoryServer.getUri();
-        console.log(`[Database] MongoMemoryServer started at: ${memUri}`);
-        const m = await mongoose.connect(memUri, { bufferCommands: false });
-        console.log("[Database] Connected to MongoMemoryServer successfully.");
+        console.log(`[Database] Connecting to MongoDB: ${primaryUri.includes("@") ? primaryUri.split("@")[1] : primaryUri}`);
+        const m = await mongoose.connect(primaryUri, opts);
+        console.log("[Database] Connected successfully.");
+        cached.conn = m;
         return m;
-      } catch (memErr: any) {
-        console.error("[Database] Critical failure starting MongoMemoryServer:", memErr);
-        throw new Error("Unable to establish MongoDB connection. Please set a valid MONGODB_URI or check network.");
+      } catch (err: any) {
+        console.warn(`[Database] Primary connection failed: ${err.message}`);
       }
-    })();
-  }
+    }
+
+    // 2. If primary failed and was not local persistent, try local 27017
+    if (primaryUri !== localPersistentUri) {
+      try {
+        console.log(`[Database] Falling back to local persistent daemon at ${localPersistentUri}...`);
+        const m = await mongoose.connect(localPersistentUri, opts);
+        console.log("[Database] Connected to local persistent MongoDB daemon.");
+        cached.conn = m;
+        return m;
+      } catch (err: any) {
+        console.warn(`[Database] Local daemon connection failed: ${err.message}`);
+      }
+    }
+
+    // 3. Fallback: Embedded MongoMemoryServer
+    try {
+      console.log("[Database] Starting embedded MongoMemoryServer fallback...");
+      const { MongoMemoryServer } = await import("mongodb-memory-server");
+
+      if (cached.memoryServer) {
+        try {
+          await cached.memoryServer.stop();
+        } catch (_) {}
+        cached.memoryServer = null;
+      }
+
+      cached.memoryServer = await MongoMemoryServer.create();
+      const memUri = cached.memoryServer.getUri();
+      console.log(`[Database] MongoMemoryServer running at: ${memUri}`);
+      const m = await mongoose.connect(memUri, { bufferCommands: false });
+      console.log("[Database] Connected to MongoMemoryServer fallback.");
+      cached.conn = m;
+      return m;
+    } catch (memErr: any) {
+      console.error("[Database] Critical failure establishing MongoDB connection:", memErr);
+      cached.conn = null;
+      cached.promise = null;
+      cached.memoryServer = null;
+      throw new Error(
+        "Unable to establish database connection. Please ensure MongoDB is running at mongodb://127.0.0.1:27017/hostelhub"
+      );
+    }
+  })();
 
   try {
-    cached.conn = await cached.promise;
-  } catch (e) {
+    const conn = await cached.promise;
+    return conn;
+  } catch (err) {
     cached.promise = null;
-    throw e;
+    throw err;
   }
-
-  return cached.conn;
 }
 
 export default connectDB;
