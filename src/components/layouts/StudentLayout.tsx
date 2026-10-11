@@ -22,6 +22,7 @@ import {
   X,
   Building2,
 } from "lucide-react";
+import { Logo } from "@/components/ui/logo";
 import NotificationBell from "./NotificationBell";
 
 export function StudentLayout({ children }: { children: React.ReactNode }) {
@@ -89,22 +90,7 @@ export function StudentLayout({ children }: { children: React.ReactNode }) {
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
             <div className="flex items-center gap-3">
-              <Link
-                href="/student/dashboard"
-                className="flex items-center gap-2 font-bold text-slate-900 group"
-              >
-                <div className="h-9 w-9 rounded-xl bg-gradient-to-tr from-brand-700 to-indigo-500 flex items-center justify-center text-white shadow-sm shadow-brand-500/20 group-hover:scale-105 transition-transform">
-                  <Building2 className="w-5 h-5" />
-                </div>
-                <div className="leading-tight">
-                  <span className="text-lg tracking-tight font-extrabold text-navy-950">
-                    Hostel<span className="text-brand-600">Hub</span>
-                  </span>
-                  <span className="hidden sm:block text-[10px] text-slate-400 font-medium uppercase tracking-wider">
-                    Student Portal
-                  </span>
-                </div>
-              </Link>
+              <Logo href="/student/dashboard" size="md" subtitle="Student Portal" />
             </div>
 
             {/* Desktop Navigation Links */}

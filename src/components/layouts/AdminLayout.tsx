@@ -24,6 +24,7 @@ import {
   ShieldAlert,
 } from "lucide-react";
 import NotificationBell from "./NotificationBell";
+import { Logo } from "@/components/ui/logo";
 
 export function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -89,25 +90,22 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
         {/* Brand Header */}
         <div className="h-16 flex items-center justify-between px-4 border-b border-navy-900/80">
           {!isCollapsed && (
-            <Link href="/admin/dashboard" className="flex items-center gap-2.5">
-              <div className="h-9 w-9 rounded-xl bg-brand-600 flex items-center justify-center text-white shadow-md shadow-brand-500/30">
-                <Building2 className="w-5 h-5" />
-              </div>
-              <div>
-                <span className="font-extrabold text-white text-base tracking-tight">
-                  Hostel<span className="text-brand-400">Hub</span>
-                </span>
-                <span className="block text-[10px] text-slate-400 font-semibold tracking-wider uppercase">
-                  Admin Console
-                </span>
-              </div>
-            </Link>
+            <Logo
+              href="/admin/dashboard"
+              size="sm"
+              isDarkTheme
+              subtitle="Admin Console"
+            />
           )}
 
           {isCollapsed && (
-            <div className="mx-auto h-9 w-9 rounded-xl bg-brand-600 flex items-center justify-center text-white shadow-md shadow-brand-500/30">
-              <Building2 className="w-5 h-5" />
-            </div>
+            <Logo
+              href="/admin/dashboard"
+              size="sm"
+              isDarkTheme
+              imageOnly
+              className="mx-auto"
+            />
           )}
 
           <button
@@ -186,12 +184,7 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
           />
           <div className="relative w-72 max-w-full bg-navy-950 text-slate-300 flex flex-col p-4 shadow-2xl animate-in slide-in-from-left duration-200">
             <div className="flex items-center justify-between pb-4 border-b border-navy-900">
-              <div className="flex items-center gap-2">
-                <div className="h-8 w-8 rounded-lg bg-brand-600 flex items-center justify-center text-white font-bold">
-                  <Building2 className="w-4 h-4" />
-                </div>
-                <span className="font-bold text-white text-base">HostelHub Admin</span>
-              </div>
+              <Logo href="/admin/dashboard" size="xs" isDarkTheme subtitle="Admin Console" />
               <button
                 onClick={() => setIsMobileDrawerOpen(false)}
                 className="p-1.5 text-slate-400 hover:text-white"

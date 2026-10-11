@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import Image from "next/image";
 import {
   CalendarClock,
   Plus,
@@ -272,10 +273,21 @@ export default function StudentLeavesPage() {
             {/* The Pass Paper / Card Container */}
             <div className="p-5 rounded-2xl bg-gradient-to-b from-slate-50 to-white border-2 border-emerald-500/50 shadow-inner relative overflow-hidden">
               {/* Institutional Header Stamp */}
-              <div className="text-center pb-4 border-b border-dashed border-slate-300 space-y-0.5">
-                <p className="text-[10px] font-black uppercase tracking-widest text-emerald-800">
-                  National Institute of Technology &bull; Security Directorate
-                </p>
+              <div className="text-center pb-4 border-b border-dashed border-slate-300 space-y-1">
+                <div className="flex items-center justify-center gap-2 mb-1">
+                  <div className="h-7 w-7 rounded-lg bg-white p-0.5 shadow-xs border border-slate-200 flex items-center justify-center">
+                    <Image
+                      src="/logo.png"
+                      alt="BIT Logo"
+                      width={24}
+                      height={20}
+                      className="object-contain"
+                    />
+                  </div>
+                  <span className="text-[11px] font-black uppercase tracking-widest text-emerald-800">
+                    Bannari Amman Institute of Technology &bull; Security Directorate
+                  </span>
+                </div>
                 <h3 className="text-base font-black text-slate-900 tracking-tight">
                   OFFICIAL HOSTEL GATE EXIT CLEARANCE
                 </h3>

@@ -4,6 +4,7 @@ import React, { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Building2, ArrowLeft, KeyRound, CheckCircle2 } from "lucide-react";
+import { Logo } from "@/components/ui/logo";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
@@ -94,14 +95,14 @@ function ForgotPasswordContent() {
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md text-center">
-        <div className="inline-flex h-12 w-12 rounded-2xl bg-gradient-to-tr from-brand-700 to-indigo-500 items-center justify-center text-white shadow-lg shadow-brand-500/30 mb-3">
-          <KeyRound className="w-6 h-6" />
-        </div>
+        <Link href="/" className="inline-block hover:scale-105 transition-transform mb-3">
+          <Logo size="xl" imageOnly />
+        </Link>
         <h2 className="text-2xl font-extrabold text-navy-950 tracking-tight">
           {step === "request" ? "Password Recovery" : "Set New Password"}
         </h2>
-        <p className="mt-1 text-xs text-slate-500">
-          HostelHub Single-Use Expiring Verification
+        <p className="mt-1 text-xs text-slate-500 font-medium">
+          Bannari Amman Institute of Technology &bull; Single-Use Verification
         </p>
       </div>
 

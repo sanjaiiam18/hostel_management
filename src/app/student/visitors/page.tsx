@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import Image from "next/image";
 import {
   Users2,
   Plus,
@@ -270,9 +271,20 @@ export default function StudentVisitorsPage() {
           <div className="space-y-4">
             <div className="p-5 rounded-2xl bg-gradient-to-b from-slate-50 to-white border-2 border-cyan-500/50 shadow-inner space-y-3">
               <div className="text-center pb-3 border-b border-dashed border-slate-300">
-                <p className="text-[10px] font-black uppercase tracking-widest text-cyan-900">
-                  National Institute of Technology &bull; Main Gate Security
-                </p>
+                <div className="flex items-center justify-center gap-2 mb-1">
+                  <div className="h-7 w-7 rounded-lg bg-white p-0.5 shadow-xs border border-slate-200 flex items-center justify-center">
+                    <Image
+                      src="/logo.png"
+                      alt="BIT Logo"
+                      width={24}
+                      height={20}
+                      className="object-contain"
+                    />
+                  </div>
+                  <span className="text-[11px] font-black uppercase tracking-widest text-cyan-900">
+                    Bannari Amman Institute of Technology &bull; Main Gate Security
+                  </span>
+                </div>
                 <h3 className="text-base font-black text-slate-900 mt-0.5">
                   AUTHORIZED VISITOR GATE PASS
                 </h3>

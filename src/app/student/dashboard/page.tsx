@@ -278,7 +278,7 @@ export default function StudentDashboardPage() {
             <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
           </span>
           <span className="text-xs font-semibold text-slate-700">
-            National Institute of Technology &bull; Spring Semester 2026
+            Bannari Amman Institute of Technology &bull; Spring Semester 2026
           </span>
           <span className="hidden md:inline-block text-slate-300">|</span>
           <span className="hidden md:inline-flex items-center gap-1 text-[11px] font-medium text-slate-500">

@@ -14,9 +14,13 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "HostelHub - Application-Based Hostel Management System",
+  title: "HostelHub | Bannari Amman Institute of Technology",
   description:
-    "Comprehensive full-stack digital hostel management platform for educational institutions.",
+    "Comprehensive full-stack digital hostel management platform for Bannari Amman Institute of Technology.",
+  icons: {
+    icon: "/logo.png",
+    apple: "/logo.png",
+  },
 };
 
 import { ToastProvider } from "@/components/ui/toast";

@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Building2, Eye, EyeOff, Lock, User as UserIcon, Shield, Sparkles, ArrowRight, Loader2 } from "lucide-react";
+import { Logo } from "@/components/ui/logo";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
@@ -62,14 +63,14 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md text-center">
-        <Link href="/" className="inline-flex h-12 w-12 rounded-2xl bg-gradient-to-tr from-brand-700 to-indigo-500 items-center justify-center text-white shadow-lg shadow-brand-500/30 mb-3 hover:scale-105 transition-transform">
-          <Building2 className="w-7 h-7" />
+        <Link href="/" className="inline-block hover:scale-105 transition-transform mb-3">
+          <Logo size="xl" imageOnly />
         </Link>
         <h2 className="text-3xl font-black text-navy-950 tracking-tight">
           Hostel<span className="text-brand-600">Hub</span>
         </h2>
         <p className="mt-1 text-xs text-slate-500 font-medium">
-          National Institute of Technology &bull; Residential Life Portal
+          Bannari Amman Institute of Technology &bull; Residential Life Portal
         </p>
       </div>
 

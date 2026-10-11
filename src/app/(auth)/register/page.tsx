@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Building2, Eye, EyeOff } from "lucide-react";
+import { Logo } from "@/components/ui/logo";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
@@ -74,9 +75,9 @@ export default function RegisterPage() {
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col justify-center py-10 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-xl text-center">
-        <div className="inline-flex h-12 w-12 rounded-2xl bg-gradient-to-tr from-brand-700 to-indigo-500 items-center justify-center text-white shadow-lg shadow-brand-500/30 mb-3">
-          <Building2 className="w-7 h-7" />
-        </div>
+        <Link href="/" className="inline-block hover:scale-105 transition-transform mb-3">
+          <Logo size="xl" imageOnly />
+        </Link>
         <h2 className="text-3xl font-extrabold text-navy-950 tracking-tight">
           Create Student Account
         </h2>

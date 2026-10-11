@@ -253,11 +253,11 @@ export default function StudentFeesPage() {
           <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-xs space-y-1">
             <div className="flex justify-between">
               <span className="text-slate-500">Institution:</span>
-              <span className="font-bold text-slate-800">National Institute of Technology</span>
+              <span className="font-bold text-slate-800">Bannari Amman Institute of Technology</span>
             </div>
             <div className="flex justify-between">
               <span className="text-slate-500">Beneficiary:</span>
-              <span className="font-bold text-slate-800">NIT Hostel Welfare Fund</span>
+              <span className="font-bold text-slate-800">BIT Hostel Welfare &amp; Mess Fund</span>
             </div>
             <div className="flex justify-between">
               <span className="text-slate-500">Semester:</span>

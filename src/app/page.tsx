@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import { Logo } from "@/components/ui/logo";
 import {
   Building2,
   Shield,
@@ -112,7 +113,7 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            <span>National Institute of Technology &bull; Campus Residential Life Directorate</span>
+            <span>Bannari Amman Institute of Technology &bull; Campus Residential Life Directorate</span>
           </div>
           <div className="hidden sm:flex items-center gap-4 text-slate-400">
             <span>Spring Semester 2026</span>
@@ -125,19 +126,7 @@ export default function HomePage() {
       {/* Main Navbar */}
       <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-xs">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
-            <div className="h-9 w-9 rounded-xl bg-gradient-to-tr from-brand-700 to-indigo-600 flex items-center justify-center text-white shadow-md shadow-brand-500/25">
-              <Building2 className="w-5 h-5" />
-            </div>
-            <div>
-              <span className="text-xl font-black text-navy-950 tracking-tight leading-none block">
-                Hostel<span className="text-brand-600">Hub</span>
-              </span>
-              <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">
-                Residential Governance
-              </span>
-            </div>
-          </div>
+          <Logo href="/" size="md" subtitle="BIT Campus Residence" />
 
           <div className="flex items-center gap-2.5">
             <Link
@@ -293,10 +282,7 @@ export default function HomePage() {
       {/* Collegiate Footer */}
       <footer className="bg-navy-950 text-slate-400 py-8 border-t border-navy-900 text-xs">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2 text-white font-bold">
-            <Building2 className="w-4 h-4 text-brand-400" />
-            <span>HostelHub &bull; National Institute of Technology</span>
-          </div>
+          <Logo href="/" size="sm" isDarkTheme subtitle="Bannari Amman Institute of Technology" />
           <p className="text-slate-500">
             Engineered with Next.js App Router, TypeScript, Mongoose, and Tailwind CSS.
           </p>
