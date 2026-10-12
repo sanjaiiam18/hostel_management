@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import Image from "next/image";
 import { Download, X, Smartphone, Share } from "lucide-react";
 
 export function PwaRegister() {
@@ -91,11 +92,17 @@ export function PwaRegister() {
         <aside
           role="region"
           aria-label="Install application prompt"
-          className="fixed bottom-20 md:bottom-6 right-4 left-4 md:left-auto md:max-w-sm z-50 bg-navy-950 text-white rounded-2xl p-4 shadow-2xl border border-navy-800 animate-in slide-in-from-bottom duration-300 ring-1 ring-white/10"
+          className="fixed bottom-[calc(4.75rem+env(safe-area-inset-bottom,0px))] md:bottom-6 right-3 left-3 sm:left-auto sm:right-6 sm:max-w-sm max-w-[calc(100vw-1.5rem)] z-50 bg-navy-950 text-white rounded-2xl p-4 shadow-2xl border border-navy-800 animate-in slide-in-from-bottom duration-300 ring-1 ring-white/10"
         >
           <div className="flex items-start gap-3">
-            <div className="h-10 w-10 rounded-xl bg-white p-1 flex items-center justify-center shrink-0 shadow-sm">
-              <img src="/icons/icon-96x96.png" alt="HostelHub" className="h-full w-full object-contain" />
+            <div className="h-10 w-10 rounded-xl bg-white p-1 flex items-center justify-center shrink-0 shadow-sm overflow-hidden">
+              <Image
+                src="/icons/icon-96x96.png"
+                alt="HostelHub"
+                width={36}
+                height={36}
+                className="h-full w-full object-contain"
+              />
             </div>
             <div className="flex-1 min-w-0">
               <h4 className="text-sm font-bold text-white leading-tight">Install HostelHub App</h4>

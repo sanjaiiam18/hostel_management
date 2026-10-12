@@ -272,22 +272,22 @@ export default function StudentDashboardPage() {
     <div className="space-y-6">
       {/* Top Academic Sub-Bar & Refresh Trigger */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-3.5 px-4 rounded-xl border border-slate-200/80 shadow-xs">
-        <div className="flex items-center gap-2.5">
-          <span className="relative flex h-2.5 w-2.5">
+        <div className="flex items-center gap-2.5 min-w-0">
+          <span className="relative flex h-2.5 w-2.5 shrink-0">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
             <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
           </span>
-          <span className="text-xs font-semibold text-slate-700">
+          <span className="text-xs font-semibold text-slate-700 truncate">
             Bannari Amman Institute of Technology &bull; Spring Semester 2026
           </span>
           <span className="hidden md:inline-block text-slate-300">|</span>
-          <span className="hidden md:inline-flex items-center gap-1 text-[11px] font-medium text-slate-500">
+          <span className="hidden md:inline-flex items-center gap-1 text-[11px] font-medium text-slate-500 shrink-0">
             <Clock className="w-3.5 h-3.5 text-amber-500" />
             Curfew: 09:30 PM (Biometric Turnstiles Armed)
           </span>
         </div>
 
-        <div className="flex items-center gap-2 self-end sm:self-auto">
+        <div className="flex items-center gap-2 self-end sm:self-auto shrink-0">
           <span className="text-[11px] text-slate-400">Synced {lastSyncedTime}</span>
           <Button
             variant="outline"
@@ -303,7 +303,7 @@ export default function StudentDashboardPage() {
       </div>
 
       {/* 1. Official Digital Hostel Identity & Gate Card (Human-Made Design) */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-navy-950 via-slate-900 to-navy-900 p-6 sm:p-7 text-white shadow-xl border border-navy-800">
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-navy-950 via-slate-900 to-navy-900 p-4 sm:p-7 text-white shadow-xl border border-navy-800">
         <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
           <div className="flex flex-col sm:flex-row sm:items-center gap-5">
             {/* Student Avatar */}

@@ -231,7 +231,7 @@ export default function AdminDashboardPage() {
       </div>
 
       {/* 2. Core KPIs Statistics Grid with Tactile Badges */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
         <StatCard
           title="Active Students"
           value={stats.totalStudents ?? 0}

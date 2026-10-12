@@ -56,7 +56,7 @@ export function Logo({
 
       {/* Brand Text */}
       {showText && !imageOnly && (
-        <div className="leading-tight text-left">
+        <div className="leading-tight text-left min-w-0">
           <span
             className={`font-black tracking-tight block ${currentSize.text} ${
               isDarkTheme ? "text-white" : "text-navy-950"
@@ -66,7 +66,7 @@ export function Logo({
           </span>
           {subtitle && (
             <span
-              className={`block font-bold uppercase tracking-wider ${currentSize.sub} ${
+              className={`block font-bold uppercase tracking-wider truncate max-w-[140px] sm:max-w-none ${currentSize.sub} ${
                 isDarkTheme ? "text-slate-400" : "text-slate-500"
               }`}
             >

@@ -80,7 +80,7 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
   ];
 
   return (
-    <div className="min-h-screen bg-slate-100/70 flex">
+    <div className="min-h-screen bg-slate-100/70 flex max-w-full overflow-x-hidden">
       {/* Desktop Collapsible Sidebar */}
       <aside
         className={`hidden md:flex flex-col bg-navy-950 text-slate-300 border-r border-navy-900 transition-all duration-300 z-30 select-none ${
@@ -182,7 +182,7 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
             className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm"
             onClick={() => setIsMobileDrawerOpen(false)}
           />
-          <div className="relative w-72 max-w-full bg-navy-950 text-slate-300 flex flex-col p-4 shadow-2xl animate-in slide-in-from-left duration-200">
+          <div className="relative w-72 max-w-[85vw] bg-navy-950 text-slate-300 flex flex-col p-4 pb-[calc(1.5rem+env(safe-area-inset-bottom,0px))] shadow-2xl animate-in slide-in-from-left duration-200">
             <div className="flex items-center justify-between pb-4 border-b border-navy-900">
               <Logo href="/admin/dashboard" size="xs" isDarkTheme subtitle="Admin Console" />
               <button
@@ -232,9 +232,9 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
       )}
 
       {/* Main Container */}
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex-1 flex flex-col min-w-0 max-w-full overflow-x-hidden">
         {/* Top Header */}
-        <header className="sticky top-0 z-20 bg-white/95 backdrop-blur-md border-b border-slate-200/80 px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between shadow-xs">
+        <header className="sticky top-0 z-20 bg-white/95 backdrop-blur-md border-b border-slate-200/80 px-3.5 sm:px-6 lg:px-8 h-16 flex items-center justify-between shadow-xs">
           <div className="flex items-center gap-3">
             <button
               onClick={() => setIsMobileDrawerOpen(true)}
@@ -263,7 +263,7 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
         </header>
 
         {/* Content Area */}
-        <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto">
+        <main className="flex-1 p-3.5 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto min-w-0 overflow-x-hidden">
           {children}
         </main>
       </div>
